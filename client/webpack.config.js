@@ -1,8 +1,9 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
+
+
 
 module.exports = () => {
   return {
@@ -15,37 +16,36 @@ module.exports = () => {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
     },
+
+    //Add and configure workbox plugins for a service worker and manifest file.
     plugins: [
       new HtmlWebpackPlugin({
         template: './index.html',
-        title: 'Text Editor'
+        title: 'Just Another Text Editor',
       }),
-
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        swDest: 'src-sw.js',
-      }),
-      new MiniCssExtractPlugin(),
       new WebpackPwaManifest({
-        fingerprints: false,
-        
         name: 'Text Editor',
-        short_name: 'Text_editor',
-        description: 'cooltext editor!',
-        background_color: '#7eb4e2',
-        theme_color: '#7eb4e2',
+        short_name: 'Jate',
+        description: 'Just Another Text Editor',
+        background_color: '#272822',
         start_url: '/',
         publicPath: '/',
+        fingerprints: false,
         icons: [
           {
             src: path.resolve('src/images/logo.png'),
-            sizes: [96, 128, 192, 256, 384, 512],
+            sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
             destination: path.join('assets', 'icons'),
           },
         ],
       }),
-     ],
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'service-worker.js',
+      }),
+    ],
 
+    // Add CSS loaders and babel to webpack.
     module: {
       rules: [
         {
@@ -56,14 +56,10 @@ module.exports = () => {
           test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: ["@babel/preset-env"],
-              plugins: [
-                "@babel/plugin-proposal-object-rest-spread",
-                "@babel/transform-runtime",
-                "@babel/plugin-transform-async-to-generator",
-              ],
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
             },
           },
         },
